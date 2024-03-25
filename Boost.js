@@ -59,10 +59,10 @@ export function CreateArea(Options) {
       Enable: true, 
       Tags: ['default'], 
       Name: 'default', 
-      OnEnter: function (p, a) => {
+      OnEnter: function (p, a) {
         p.Ui.Hint.Value = `вы вошли в зону ${a.Name}`
       },
-      OnExit: function (p, a) => {
+      OnExit: function (p, a) {
         p.Ui.Hint.Value = `вы вышли из зоны ${a.Name}`
       }
     }
