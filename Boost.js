@@ -76,7 +76,7 @@ export function CreateArea(Options) {
   trigger.OnEnter.Add(RESULT.trigger.OnEnter)
   trigger.OnExit.Add(RESULT.trigger.OnExit)
   
-  let view = API.AreaViewService.Get(RESULT.trigger.Name)
+  let view = API.AreaViewService.GetContext().Get(RESULT.trigger.Name)
   view.Tags   = RESULT.trigger.Tags
   view.Enable = RESULT.view.Enable
   view.Color  = RESULT.view.Color
