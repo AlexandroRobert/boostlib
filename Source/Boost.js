@@ -55,14 +55,12 @@ export function CreateArea(Options) {
   const MAIN_OPTIONS = {
     // Состовляющая отображение
     view: {
-      Enable: true, Color: new BASIC.Color(0, 0, 0, 0)
-    },
+      Enable: true, Color: new BASIC.Color(0, 0, 0, 0)},
     // Состовляющая триггера
     trigger: {
       Enable: true, Tags: ['default'], Name: 'default', 
       OnEnter: function (p, a) { p.Ui.Hint.Value = `вы вошли в зону ${a.Name}` },
-      OnExit: function (p, a)  { p.Ui.Hint.Value = `вы вышли из зоны ${a.Name}` }
-    }
+      OnExit: function (p, a)  { p.Ui.Hint.Value = `вы вышли из зоны ${a.Name}` }}
   }
   
   const RESULT = Object.assign(Options, MAIN_OPTIONS), 
