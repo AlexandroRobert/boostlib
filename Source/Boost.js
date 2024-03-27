@@ -9,6 +9,10 @@ import * as BASIC from 'pixel_combats/basic'
 // copyright © Mak | MakCompany
 
 
+function generateId(str) {
+  return `${str.length * 2}_${str[Math.floor(Math.random() * str.length)]}`
+}
+
 // Вернёт UnityMarcup строку исходя от входных параметров
 // Не следует писать тегов внутри параметров, выносите за параметры форматированием строк
 // @param {string} Text - Входной текст для старта форматирования
@@ -51,39 +55,32 @@ export function CreateArea(Options) {
   const MAIN_OPTIONS = {
     // Состовляющая отображение
     view: {
-      Enable: true, 
-      Color: new BASIC.Color(0, 0, 0, 0)
+      Enable: true, Color: new BASIC.Color(0, 0, 0, 0)
     },
     // Состовляющая триггера
     trigger: {
-      Enable: true, 
-      Tags: ['default'], 
-      Name: 'default', 
-      OnEnter: function (p, a) {
-        p.Ui.Hint.Value = `вы вошли в зону ${a.Name}`
-      },
-      OnExit: function (p, a) {
-        p.Ui.Hint.Value = `вы вышли из зоны ${a.Name}`
-      }
+      Enable: true, Tags: ['default'], Name: 'default', 
+      OnEnter: function (p, a) { p.Ui.Hint.Value = `вы вошли в зону ${a.Name}` },
+      OnExit: function (p, a)  { p.Ui.Hint.Value = `вы вышли из зоны ${a.Name}` }
     }
   }
   
-  const RESULT = Object.assign(Options, MAIN_OPTIONS)
+  const RESULT = Object.assign(Options, MAIN_OPTIONS), 
+    { view: viewT, trigger: triggerT } = RESULT
+    
+  let trigger = API.AreaPlayerTriggerService.Get(RESULT.trigger.Name),
+    view = API.AreaViewService.GetContext().Get(RESULT.trigger.Name)
   
-  let trigger = API.AreaPlayerTriggerService.Get(RESULT.trigger.Name)
-  trigger.Tags = RESULT.trigger.Tags
-  trigger.Enable = RESULT.trigger.Enable
-  trigger.OnEnter.Add(RESULT.trigger.OnEnter)
-  trigger.OnExit.Add(RESULT.trigger.OnExit)
+  trigger.Enable = triggerT.Enable
+  view.Enable = viewT.Enable
   
-  let view = API.AreaViewService.GetContext().Get(RESULT.trigger.Name)
-  view.Tags   = RESULT.trigger.Tags
-  view.Enable = RESULT.view.Enable
-  view.Color  = RESULT.view.Color
+  view.Tags = triggerT.Tags
+  trigger.Tags = triggerT.Tags
+  
+  trigger.OnEnter.Add(triggerT.OnEnter)
+  trigger.OnExit.Add(triggerT.OnExit)
+  
+  view.Color = viewT.Color
   
   return { trigger, view }
-}
-
-function generateId(str) {
-  return `${str.length * 2}_${str[Math.floor(Math.random() * str.length)]}`
 }
