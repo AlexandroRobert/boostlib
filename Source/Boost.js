@@ -67,13 +67,11 @@ export function CreateArea(Options) {
   
   const RESULT = Object.assign(Options, MAIN_OPTIONS), 
     { view: viewT, trigger: triggerT } = RESULT
-    
   let trigger = API.AreaPlayerTriggerService.Get(RESULT.trigger.Name),
     view = API.AreaViewService.GetContext().Get(RESULT.trigger.Name)
   
   trigger.Enable = triggerT.Enable
   view.Enable = viewT.Enable
-  
   view.Tags = triggerT.Tags
   trigger.Tags = triggerT.Tags
   
@@ -81,6 +79,7 @@ export function CreateArea(Options) {
   trigger.OnExit.Add(triggerT.OnExit)
   
   view.Color = viewT.Color
-  
+
+  // вернём объект, в виде триггера и виазулизатора
   return { trigger, view }
 }
