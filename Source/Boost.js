@@ -1,8 +1,8 @@
 import * as API from 'pixel_combats/room'
 import * as BASIC from 'pixel_combats/basic'
 
-// TODO: сделать вставку с библиотекой цветов в основном файле
-// import * as COLORLIB from './ColorLib.js'
+// TODO: uncomment && test
+// const ColorsLibrary = await import('./ColorLib.js')
 
 
 // Библиотека украшающая работу с API и JavaScript в режимах
@@ -10,17 +10,17 @@ import * as BASIC from 'pixel_combats/basic'
 
 
 function generateId(str) {
-  return `${str.length * 2}_${str[Math.floor(Math.random() * str.length)]}`
+  return `${str.length * 2}_${str.trim()[Math.floor(Math.random() * str.trim().length)]}${Math.floor(Math.random() * 10000)}`
 }
 
 // Вернёт UnityMarcup строку исходя от входных параметров
 // Не следует писать тегов внутри параметров, выносите за параметры форматированием строк
 // @param {string} Text - Входной текст для старта форматирования
 // @return {string} - Отформатированный текст в виде UnityMarcup тегов
-export function TextView(Text) {
+export function TextView(text) {
   let newText = ''
   
-  Text.split('').forEach(i => {
+  text.split('').forEach(i => {
     if (i === i.toUpperCase()) newText += `<size=38>${i}</size>`
     else newText += `<size=30>${i}</size>`
   })
@@ -29,30 +29,30 @@ export function TextView(Text) {
 }
 
 // Создаёт таймер который будет выполнен 1 раз
-// @param {float} Tick - время до выполнения callback внутри таймера
-// @param {callback} Callback - функция для выполнения
+// @param {float} tick - время до выполнения callback внутри таймера
+// @param {callback} callback - функция для выполнения
 // @return {API.ITimer} - созданный таймер
-export function SetTimeout(Tick, Callback) {
-  const TIMER = API.Timers.GetContext().Get(generateId(Callback))
-  TIMER.OnTimer.Add(Callback)
-  if (Tick >= 0) TIMER.Restart(Tick)
-  return TIMER
+export function SetTimeout(tick, callback) {
+  const timer = API.Timers.GetContext().Get(generateId(callback))
+  timer.OnTimer.Add(callback)
+  if (tick >= 0) timer.Restart(tick)
+  return timer
 }
 
 // Аналогично функции <see href='SetTimeout'> только выполняется бесконечно
 // Можно остановить методом Stop
-export function SetInterval(Tick, Callback) {
-  const TIMER = SetTimeout(-1, Callback)
-  Timer.RestartLoop(Tick)
-  return TIMER
+export function SetInterval(tick, callback) {
+  const timer = SetTimeout(-1, callback)
+  timer.RestartLoop(tick)
+  return timer
 }
 
 // Создаёт новую зону с триггером и цветом
-// @param {Object} Options - опции создания зоны
-//    Все нужные параметры лежат в <see href="MAIN_OPTIONS">
+// @param {Object} options - опции создания зоны
+//    Все нужные параметры лежат в <see href="main_options">
 // @return {Object} - зона, состовляющая из 2 частей: триггер, сервис отображения
-export function CreateArea(Options) {
-  const MAIN_OPTIONS = {
+export function CreateArea(options) {
+  const mainOptions = {
     // Состовляющая отображение
     view: {
       Enable: true, Color: new BASIC.Color(0, 0, 0, 0)},
@@ -63,10 +63,10 @@ export function CreateArea(Options) {
       OnExit: function (p, a)  { p.Ui.Hint.Value = `вы вышли из зоны ${a.Name}` }}
   }
   
-  const RESULT = Object.assign(Options, MAIN_OPTIONS), 
-    { view: viewT, trigger: triggerT } = RESULT
-  let trigger = API.AreaPlayerTriggerService.Get(RESULT.trigger.Name),
-    view = API.AreaViewService.GetContext().Get(RESULT.trigger.Name)
+  const result = Object.assign(options, mainOptions), 
+    { view: viewT, trigger: triggerT } = result
+  let trigger = API.AreaPlayerTriggerService.Get(result.trigger.Name),
+    view = API.AreaViewService.GetContext().Get(result.trigger.Name)
   
   trigger.Enable = triggerT.Enable
   view.Enable = viewT.Enable
@@ -80,4 +80,19 @@ export function CreateArea(Options) {
 
   // вернём объект, в виде триггера и виазулизатора
   return { trigger, view }
+}
+
+// Создаёт и возвращает команду
+// @param {string} id - айди команды
+// @param {string} name - имя команды
+// @param {BASIC.IColor} color - цвет команды
+// @param {int} spawns - спавнпоинты
+// @param {string} build - блоксет
+// @return {API.ITeam} команда
+export function CreateTeam(id, name, color, spawns, build) {
+  const team = API.Teams.Get(id)
+  API.Teams.Add(id, name, color)
+  team.Spawns.SpawnPointsGroups.Add(spawns)
+  team.Build.BlocksSet.Value = API.BuildBlocksSet[build]
+  return team
 }
